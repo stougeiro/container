@@ -97,6 +97,10 @@
             (
                 function (\ReflectionParameter $param) use ($abstract)
                 {
+                    if ($param->isDefaultValueAvailable()) {
+                        return $param->getDefaultValue();
+                    }
+
                     $name = $param->getName();
                     $type = $param->getType();
 
