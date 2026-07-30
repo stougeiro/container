@@ -1,0 +1,49 @@
+{
+    "name": "stougeiro/container",
+    "description": "A fast and minimalistic Dependency Injection container focused on predictable behavior, low overhead and clean architecture for modern PHP applications.",
+    "type": "package",
+    "minimum-stability": "stable",
+    "prefer-stable": true,
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "stougeiro",
+            "email": "sidneytougeiro@gmail.com"
+        }
+    ],
+    "keywords": [
+        "php",
+        "dependency-injection",
+        "di-container",
+        "container",
+        "service-container",
+        "service-locator",
+        "inversion-of-control",
+        "ioc",
+        "architecture",
+        "framework-agnostic",
+        "lightweight",
+        "performance"
+    ],
+    "support": {
+        "issues": "https://github.com/stougeiro/container/issues",
+        "source": "https://github.com/stougeiro/container"
+    },
+    "funding": [
+        {
+            "type": "buymeacoffee",
+            "url": "https://www.buymeacoffee.com/seuusuario"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "STDW\\Container\\": "src/"
+        }
+    },
+    "require": {
+        "php": ">=8.1"
+    },
+    "require-dev": {
+        "phpstan/phpstan": "^2.2"
+    }
+}
