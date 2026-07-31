@@ -1,7 +1,7 @@
 {
     "name": "stougeiro/container",
     "description": "A fast and minimalistic Dependency Injection container focused on predictable behavior, low overhead and clean architecture for modern PHP applications.",
-    "type": "package",
+    "type": "library",
     "minimum-stability": "stable",
     "prefer-stable": true,
     "license": "MIT",
@@ -32,7 +32,7 @@
     "funding": [
         {
             "type": "buymeacoffee",
-            "url": "https://www.buymeacoffee.com/seuusuario"
+            "url": "https://www.buymeacoffee.com/stougeiro"
         }
     ],
     "autoload": {
