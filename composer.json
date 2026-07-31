@@ -41,7 +41,8 @@
         }
     },
     "require": {
-        "php": ">=8.1"
+        "php": ">=8.1",
+        "stougeiro/container-contract": "^1.0"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.2"
