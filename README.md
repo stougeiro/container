@@ -25,7 +25,7 @@ It provides a clean, predictable and high‑performance foundation for applicati
   Contracts do not assume any specific container implementation, allowing different ecosystems to adopt and extend them freely.
 
 - **Minimal footprint**  
-  The container and service manager are intentionally small, readable, maintainable — ideal for microframeworks, modular applications and high‑performance environments.
+  The container and service manager are intentionally small, readable, maintainable,ideal for microframeworks, modular applications and high‑performance environments.
 
 - **Deterministic resolution**  
   Services are resolved through one of three clear mechanisms: a closure, a factory class or direct instantiation. Nothing else is performed behind the scenes.
