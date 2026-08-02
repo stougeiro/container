@@ -35,7 +35,7 @@ It provides a clean, predictable and high‑performance foundation for applicati
   The container does not attempt to guess dependencies or resolve classes automatically. Every service is defined explicitly, making the system easy to audit and reason about.
 
 
-## 🧩 The Factory Adapter Pattern
+## 🧩 Factory Adapter Pattern
 
 To keep libraries pure and decoupled from the container, this package embraces a simple but powerful idea: any external class can be adapted into a container‑aware service without modifying the original library.
 
@@ -147,6 +147,42 @@ $manager->boot();
 
 $manager->terminate();
 ```
+
+### Global Container Access
+
+The package provides an optional global helper function called `container()`, which returns a single shared instance of the container. This enables a simple and convenient static mode, allowing services to be registered and resolved without manually instantiating the container.
+
+The function is automatically loaded through Composer and can be used anywhere in the application.
+
+```php
+// Registering
+container()->singleton(LoggerInterface::class, FileLogger::class);
+
+// Retrieving services
+$logger = container()->get(LoggerInterface::class);
+```
+
+It also integrates seamlessly with the `ServiceManager`:
+
+```php
+$manager = new ServiceManager(container());
+
+// Registering the provider
+$manager->add(AppProvider::class);
+
+// Executing the provider lifecycle
+$manager->register();
+$manager->boot();
+
+  // Application runs
+  // the global container now contains all provider-registered services
+  container()->get(SomeService::class); // Retrieving registered service
+
+$manager->terminate();
+```
+
+Using the global container is entirely optional.
+Developers who prefer isolated instances can continue using `new Container()` normally.
 
 ---
 
