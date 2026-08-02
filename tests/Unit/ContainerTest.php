@@ -13,16 +13,23 @@
 
     class Foo implements FooInterface
     {
-        public function __construct(public string $value = '') {}
+        public function __construct(
+            public string $value = '')
+        {}
     }
 
-    class Bar implements FooInterface, ServiceFactoryInterface
+    class Bar implements FooInterface
     {
-        public function __construct(public string $value = '') {}
+        public function __construct(
+            public string $value = '')
+        {}
+    }
 
+    class BarService extends Bar implements ServiceFactoryInterface
+    {
         public static function factory(ContainerInterface $container): static
         {
-            return new Bar('factory');
+            return new static('factory');
         }
     }
 
@@ -36,7 +43,9 @@
 
     class BrokenImplementation implements FooInterface
     {
-        public function __construct(public string $value) {}
+        public function __construct(
+            public string $value)
+        {}
     }
 
 
@@ -77,7 +86,7 @@
      */
     it('14 resolves services using a factory class', function () {
         $container = new Container();
-        $container->singleton(FooInterface::class, Bar::class);
+        $container->singleton(FooInterface::class, BarService::class);
 
         $bar = $container->get(FooInterface::class);
 

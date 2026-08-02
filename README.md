@@ -75,11 +75,11 @@ use STDW\Contract\Container\ContainerInterface;
 
 class CacheService extends Cache implements ServiceFactoryInterface
 {
-  public static function factory(ContainerInterface $container): Cache
+  public static function factory(ContainerInterface $container): static
   {
     $config = $container->get(Config::class);
 
-    return new Cache(
+    return new static(
       $config->get('cache.ttl', 3600),
       $config->get('cache.namespace', 'app'),
       $config->get('cache.path', '/tmp/app-cache')
