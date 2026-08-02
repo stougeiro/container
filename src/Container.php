@@ -3,7 +3,7 @@
     namespace STDW\Container;
 
     use Closure;
-    use Exception;
+    use Throwable;
     use STDW\Contract\Container\ContainerInterface;
     use STDW\Container\Exception\NotFoundException;
     use STDW\Container\Exception\ContainerException;
@@ -115,14 +115,16 @@
             if ( ! is_string($implementation)) {
                 throw new ContainerException('Invalid concrete definition');
             }
- 
-            if (is_subclass_of($implementation, ServiceFactoryInterface::class)) {
-                return $implementation::factory($this);
-            }
 
-            try {
+            try
+            {
+                if (is_subclass_of($implementation, ServiceFactoryInterface::class)) {
+                    return $implementation::factory($this);
+                }
+
                 return new $implementation;
-            } catch (Exception $e) {
+            }
+            catch (Throwable $e) {
                 throw new ContainerException("Failed to instantiate service [$implementation]: {$e->getMessage()}", $e);
             }
         }
