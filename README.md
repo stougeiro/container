@@ -35,6 +35,18 @@ It provides a clean, predictable and high‑performance foundation for applicati
   The container does not attempt to guess dependencies or resolve classes automatically. Every service is defined explicitly, making the system easy to audit and reason about.
 
 
+## 🧩 The Factory Adapter Pattern
+
+To keep libraries pure and decoupled from the container, this package embraces a simple but powerful idea: any external class can be adapted into a container‑aware service without modifying the original library.
+
+By creating a small adapter class that:
+- extends the original implementation
+- implements ServiceFactoryInterface
+- and exposes a static factory() method
+- you gain full control over how the service is constructed — configuration, dependencies, initialization logic — while keeping the underlying library untouched.
+
+This pattern allows any third‑party library to be integrated cleanly and predictably, making the container universally compatible without relying on autowiring or reflection.
+
 ---
 
 ## 📦 Installation
