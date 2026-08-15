@@ -14,6 +14,8 @@
         protected array $collection = [];
 
 
+        /** @return void 
+         */
         public function __construct()
         { }
 
@@ -34,6 +36,8 @@
             $this->collection[$fqcn] = $provider;
         }
 
+        /** @return void 
+         */
         public function register(): void
         {
             foreach ($this->collection as $provider) {
@@ -41,6 +45,8 @@
             }
         }
 
+        /** @return void 
+         */
         public function boot(): void
         {
             foreach ($this->collection as $provider) {
@@ -48,6 +54,8 @@
             }
         }
 
+        /** @return void 
+         */
         public function terminate(): void
         {
             foreach ($this->collection as $provider) {

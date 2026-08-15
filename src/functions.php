@@ -4,6 +4,8 @@
     use STDW\Container\Container;
 
 
+    /** @return ContainerInterface 
+     */
     function container(): ContainerInterface
     {
         static $instance;

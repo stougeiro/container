@@ -21,6 +21,8 @@
         private array $resolved = [];
 
 
+        /** @return void 
+         */
         public function __construct()
         { }
 
