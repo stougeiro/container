@@ -8,7 +8,14 @@
      */
     function container(): ContainerInterface
     {
-        static $instance;
+        static $instance = null;
 
-        return $instance ??= new Container();
+        if (is_null($instance)) {
+            $instance = new Container();
+            $instance->singleton(ContainerInterface::class, function() use ($instance) {
+                return $instance;
+            });
+        }
+
+        return $instance;
     }
