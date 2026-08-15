@@ -3,27 +3,15 @@
     use STDW\Container\Container;
     use STDW\Container\ServiceManager;
     use STDW\Contract\Container\ContainerInterface;
-    use STDW\Contract\Container\ServiceProviderInterface;
+    use STDW\Contract\Container\ServiceProviderAbstracted;
+    use Tests\Support\TestableServiceManager;
 
 
-    // class TestableServiceManager extends ServiceManager
-    // {
-    //     public function getContainer(): ContainerInterface
-    //     { return $this->container; }
-
-    //     public function getCollection(): array
-    //     { return $this->collection; }
-    // }
-
-    class TestProvider implements ServiceProviderInterface
+    class TestProvider extends ServiceProviderAbstracted
     {
         public bool $registered = false;
         public bool $booted = false;
         public bool $terminated = false;
-
-        public function __construct(
-            public ContainerInterface $container)
-        { }
 
         public function register(): void
         { $this->registered = true; }
@@ -33,18 +21,16 @@
 
         public function terminate(): void
         { $this->terminated = true; }
+
+        public function getContainer(): ContainerInterface
+        { return $this->container; }
     }
 
-    /**
-     * Without ServiceProviderInterface implementation */
+    /** Without ServiceProviderInterface implementation */
     class InvalidProvider {}
 
-    class BrokenProvider implements ServiceProviderInterface
+    class BrokenProvider extends ServiceProviderAbstracted
     {
-        public function __construct(
-            protected ContainerInterface $container)
-        { }
-
         public function register(): void
         { throw new RuntimeException("register failed"); }
 
@@ -56,11 +42,10 @@
     }
 
 
-    /** 21 — provider added correctly
-     */
-    it('21 provider verification when added', function () {
-        $manager = new TestableServiceManager(new Container());
-        $manager->add(TestProvider::class);
+    it('provider verification when added', function () {
+        $container = new Container();
+        $manager = new TestableServiceManager();
+        $manager->add(new TestProvider($container));
 
         $collection = $manager->getCollection();
 
@@ -68,44 +53,31 @@
             ->toBeInstanceOf(TestProvider::class);
     });
 
-    /** 22 — provider recieves same container instance
-     */
-    it('22 provider receives the same container instance', function () {
+    it('provider receives the same container instance', function () {
         $container = new Container();
-
-        $manager = new TestableServiceManager($container);
-        $manager->add(TestProvider::class);
+        $manager = new TestableServiceManager();
+        $manager->add(new TestProvider($container));
 
         $collection = $manager->getCollection();
         $provider = $collection[TestProvider::class];
 
-        expect($provider->container)->toBe($container);
+        expect($provider->getContainer())->toBe($container);
     });
 
-    /** 23 — invalid provider throws exception
-     */
-    it('23 throws when provider does not implement ServiceProviderInterface', function () {
-        $manager = new ServiceManager(new Container());
+    it('throws when adding the same provider twice', function () {
+        $container = new Container();
+        $manager = new TestableServiceManager();
+        $testProvider = new TestProvider($container);
+        $manager->add($testProvider);
 
-        expect(fn() => $manager->add(InvalidProvider::class))
+        expect(fn() => $manager->add($testProvider))
             ->toThrow(InvalidArgumentException::class);
     });
 
-    /** 24 — adding the same provider twice throws exception
-     */
-    it('24 throws when adding the same provider twice', function () {
-        $manager = new ServiceManager(new Container());
-        $manager->add(TestProvider::class);
-
-        expect(fn() => $manager->add(TestProvider::class))
-            ->toThrow(InvalidArgumentException::class);
-    });
-
-    /** 25 — provider lifecycle methods are executed correctly
-     */
-    it('25 executes register(), boot() and terminate() lifecycle', function () {
-        $manager = new TestableServiceManager(new Container());
-        $manager->add(TestProvider::class);
+    it('executes register(), boot() and terminate() lifecycle', function () {
+        $container = new Container();
+        $manager = new TestableServiceManager();
+        $manager->add(new TestProvider($container));
 
         $collection = $manager->getCollection();
         $provider = $collection[TestProvider::class];
@@ -119,11 +91,10 @@
             ->and($provider->terminated)->toBeTrue();
     });
 
-    /** 26 — provider is instantiated only once
-     */
-    it('26 provider is instantiated only once', function () {
-        $manager = new TestableServiceManager(new Container());
-        $manager->add(TestProvider::class);
+    it('provider is instantiated only once', function () {
+        $container = new Container();
+        $manager = new TestableServiceManager();
+        $manager->add(new TestProvider($container));
 
         $collection = $manager->getCollection();
 
@@ -133,11 +104,10 @@
         expect($first)->toBe($second);
     });
 
-    /** 7 — propagates provider exceptions during lifecycle
-     */
-    it('27 propagates provider exceptions during lifecycle', function () {
-        $manager = new ServiceManager(new Container());
-        $manager->add(BrokenProvider::class);
+    it('propagates provider exceptions during lifecycle', function () {
+        $container = new Container();
+        $manager = new ServiceManager();
+        $manager->add(new BrokenProvider($container));
 
         expect(fn() => $manager->register())
             ->toThrow(RuntimeException::class);

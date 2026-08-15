@@ -1,19 +1,10 @@
 <?php
 
-    use STDW\Container\Container;
-    use STDW\Container\ServiceManager;
     use STDW\Contract\Container\ContainerInterface;
-    use STDW\Contract\Container\ServiceProviderInterface;
+    use STDW\Contract\Container\ServiceProviderAbstracted;
+    use STDW\Container\Container;
+    use Tests\Support\TestableServiceManager;
 
-
-    class TestableServiceManager extends ServiceManager
-    {
-        public function getContainer(): ContainerInterface
-        { return $this->container; }
-
-        public function getCollection(): array
-        { return $this->collection; }
-    }
 
     /** 3 fake interfaces
      */
@@ -35,17 +26,21 @@
         public function __construct(public string $value = 'gamma') {}
     }
 
+    /** TestableProviderAbstracted
+     */
+    abstract class TestableProviderAbstracted extends ServiceProviderAbstracted
+    {
+        public function getContainer(): ContainerInterface
+        { return $this->container; }
+    }
+
     /** 3 fake providers
      */
-    class AlphaProvider implements ServiceProviderInterface
+    class AlphaProvider extends TestableProviderAbstracted
     {
         public bool $registered = false;
         public bool $booted = false;
         public bool $terminated = false;
-
-        public function __construct(
-            public ContainerInterface $container)
-        {}
 
         public function register(): void
         {
@@ -60,15 +55,11 @@
         { $this->terminated = true; }
     }
 
-    class BetaProvider implements ServiceProviderInterface
+    class BetaProvider extends TestableProviderAbstracted
     {
         public bool $registered = false;
         public bool $booted = false;
         public bool $terminated = false;
-
-        public function __construct(
-            public ContainerInterface $container)
-        {}
 
         public function register(): void
         {
@@ -83,15 +74,11 @@
         { $this->terminated = true; }
     }
 
-    class GammaProvider implements ServiceProviderInterface
+    class GammaProvider extends TestableProviderAbstracted
     {
         public bool $registered = false;
         public bool $booted = false;
         public bool $terminated = false;
-
-        public function __construct(
-            public ContainerInterface $container)
-        {}
 
         public function register(): void
         {
@@ -111,12 +98,12 @@
      */
     it('31 runs full application lifecycle with multiple providers', function () {
         $container = new Container();
-        $manager = new TestableServiceManager($container);
+        $manager = new TestableServiceManager();
 
         // register providers
-        $manager->add(AlphaProvider::class);
-        $manager->add(BetaProvider::class);
-        $manager->add(GammaProvider::class);
+        $manager->add(new AlphaProvider($container));
+        $manager->add(new BetaProvider($container));
+        $manager->add(new GammaProvider($container));
 
         // lifecycle
         $manager->register();
@@ -137,18 +124,11 @@
 
         $collection = $manager->getCollection();
 
-        // provider lifecycle assertions
-        $providers = [
-            AlphaProvider::class => $collection[AlphaProvider::class] ?? null,
-            BetaProvider::class  => $collection[BetaProvider::class] ?? null,
-            GammaProvider::class => $collection[GammaProvider::class] ?? null,
-        ];
-
-        foreach ($providers as $provider) {
+        foreach ($collection as $provider) {
             expect($provider->registered)->toBeTrue()
                 ->and($provider->booted)->toBeTrue()
                 ->and($provider->terminated)->toBeTrue();
 
-            expect($provider->container)->toBe($container);
+            expect($provider->getContainer())->toBe($container);
         }
     });

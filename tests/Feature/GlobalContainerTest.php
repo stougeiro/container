@@ -1,16 +1,17 @@
 <?php
 
     use STDW\Container\Container;
+    use STDW\Contract\Container\ContainerInterface;
 
 
-    it('41 returns the same instance every time', function () {
+    it('returns the same instance every time', function () {
         $c1 = container();
         $c2 = container();
 
         expect($c1)->toBe($c2);
     });
 
-    it('42 lazy loads the container only once', function () {
+    it('lazy loads the container only once', function () {
         $first = container();
         expect($first)->toBeInstanceOf(Container::class);
 
@@ -18,9 +19,20 @@
         expect($second)->toBe($first);
     });
 
-    it('43 new Container() creates an independent instance', function () {
+    it('new Container() creates an independent instance', function () {
         $global = container();
         $local  = new Container();
 
         expect($local)->not->toBe($global);
+    });
+
+    it('container returns self when requested as interface', function () {
+        $container = container();
+        $other = $container->get(ContainerInterface::class);
+
+        expect($container)->toBe($other);
+        expect($container)->toBeInstanceOf(Container::class);
+        expect($other)->toBeInstanceOf(Container::class);
+        expect($container)->toBeInstanceOf(ContainerInterface::class);
+        expect($other)->toBeInstanceOf(ContainerInterface::class);
     });
