@@ -4,7 +4,6 @@
 
     use InvalidArgumentException;
     use STDW\Contract\Container\ServiceManagerInterface;
-    use STDW\Contract\Container\ContainerInterface;
     use STDW\Contract\Container\ServiceProviderInterface;
 
 
@@ -15,27 +14,24 @@
         protected array $collection = [];
 
 
-        public function __construct(
-            protected ContainerInterface $container)
+        public function __construct()
         { }
 
 
         /**
-         * @param string $provider 
+         * @param ServiceProviderInterface $provider 
          * @return void 
          * @throws InvalidArgumentException 
          */
-        public function add(string $provider): void
+        public function add(ServiceProviderInterface $provider): void
         {
-            if ( ! is_subclass_of($provider, ServiceProviderInterface::class)) {
-                throw new InvalidArgumentException("Provider {$provider} must implement ServiceProviderInterface");
+            $fqcn = $provider::class;
+
+            if (isset($this->collection[$fqcn])) {
+                throw new InvalidArgumentException("Provider {$fqcn} is already registered");
             }
 
-            if (isset($this->collection[$provider])) {
-                throw new InvalidArgumentException("Provider {$provider} is already registered");
-            }
-
-            $this->collection[$provider] = new $provider($this->container);
+            $this->collection[$fqcn] = $provider;
         }
 
         public function register(): void
